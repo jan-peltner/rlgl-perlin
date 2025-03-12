@@ -22,8 +22,8 @@ float smoothT(float t) {
 
 vec2 randGradient(vec2 vertex) {
     float randVal = rand(vertex);
-    float angle = randVal * 2.0 * 3.14159; // random angle between 0 and 2 pi
-    return vec2(cos(angle), sin(angle)); // unit vector (vector with length = 1 that encodes direction)
+    float angle = randVal * 2.0 * 3.14159; // seeded random angle between 0 and 2 pi that changes periodically over time
+    return vec2(cos(angle + time * 0.5), sin(angle + time * 0.5)); // unit vector (vector with length = 1 that encodes direction)
 }
 
 float perlin(vec2 pos, float gridSize) {
@@ -77,12 +77,12 @@ void main()
 
     // generate fractal noise -> blend octaves of perlin noise
     for (int i = 0; i < octaves; ++i) {
-        finalNoise += perlin(gl_FragCoord.xy * frequency, gridSize / frequency) * amplitude;
+        finalNoise += perlin(gl_FragCoord.xy * frequency, gridSize) * amplitude;
         totalAmplitude += amplitude;
         frequency *= 2.0;
         amplitude *= 0.5;
     }
 
     finalNoise /= totalAmplitude;
-    finalColor = vec4(vec3(1), finalNoise);
-}
+    int colorIndex = int(finalNoise * 9.0); // Map to 0-9 (10 colors)
+    finalColor = colors[colorIndex]; }
