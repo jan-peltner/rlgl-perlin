@@ -22,8 +22,8 @@ float smoothT(float t) {
 
 vec2 randGradient(vec2 vertex) {
     float randVal = rand(vertex);
-    float angle = randVal * 2.0 * 3.14159; // seeded random angle between 0 and 2 pi that changes periodically over time
-    return vec2(cos(angle + time * 0.5), sin(angle + time * 0.5)); // unit vector (vector with length = 1 that encodes direction)
+    float angle = randVal * 2.0 * 3.14159; // angle between 0 and 2 pi
+    return vec2(cos(angle + time * 0.5), sin(angle + time * 0.5)); // unit vector with changing angle in respect to time
 }
 
 float perlin(vec2 pos, float gridSize) {
