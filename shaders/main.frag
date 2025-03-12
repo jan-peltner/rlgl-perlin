@@ -84,5 +84,6 @@ void main()
     }
 
     finalNoise /= totalAmplitude;
-    int colorIndex = int(finalNoise * 9.0); // Map to 0-9 (10 colors)
-    finalColor = colors[colorIndex]; }
+    int colorIndex = int(finalNoise * 9.0);
+    finalColor = colors[colorIndex]; 
+}
