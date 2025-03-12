@@ -2,9 +2,9 @@
 
 set -ex
 
-cc -Wall -Wextra -o bin/rlgl src/main.c -lraylib -lm
-
 mkdir -p bin
+
+cc -Wall -Wextra -o bin/rlgl src/main.c -lraylib -lm
 
 cd bin
 
