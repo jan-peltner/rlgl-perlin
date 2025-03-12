@@ -26,17 +26,14 @@ vec2 randGradient(vec2 vertex) {
     return vec2(cos(angle), sin(angle)); // unit vector (vector with length = 1 that encodes direction)
 }
 
-void main()
-{
-    float gridSize = 50.0;
-    float vertSize = 0.02;
+float perlin(vec2 pos, float gridSize) {
 
     // get all 4 grid vertices of the current grid cell
     // component-wise division followed by component wise flooring
-    vec2 gridVertTl = floor(gl_FragCoord.xy / gridSize);
-    vec2 gridVertTr = floor(gl_FragCoord.xy / gridSize) + vec2(1, 0);
-    vec2 gridVertBl = floor(gl_FragCoord.xy / gridSize) + vec2(0, 1);
-    vec2 gridVertBr = floor(gl_FragCoord.xy / gridSize) + vec2(1, 1);
+    vec2 gridVertTl = floor(pos.xy / gridSize);
+    vec2 gridVertTr = floor(pos.xy / gridSize) + vec2(1, 0);
+    vec2 gridVertBl = floor(pos.xy / gridSize) + vec2(0, 1);
+    vec2 gridVertBr = floor(pos.xy / gridSize) + vec2(1, 1);
 
     // compute random gradients for each grid vertex
     vec2 gradientTl = randGradient(gridVertTl);
@@ -45,7 +42,7 @@ void main()
     vec2 gradientBr = randGradient(gridVertBr);
 
     // map frag coord to grid cell space
-    vec2 fragPos = gl_FragCoord.xy / gridSize;
+    vec2 fragPos = pos.xy / gridSize;
     vec2 normalizedFragPos = fract(fragPos);
 
     // calculate vectors pointing from grid vertices to the fragment
@@ -66,7 +63,26 @@ void main()
     float topMix = mix(dotTl, dotTr, sx);
     float bottomMix = mix(dotBl, dotBr, sx);
         // vertical
-    float finalNoise = mix(topMix, bottomMix, sy) + 0.5;
+    return mix(topMix, bottomMix, sy) + 0.5;
+}
 
-    finalColor = colors[1] * vec4(vec3(1), finalNoise);
+void main()
+{
+    int octaves = 6;
+    float gridSize = 100.0;
+    float finalNoise = 0.0;
+    float amplitude = 1.0;
+    float frequency = 1.0;
+    float totalAmplitude = 0.0;
+
+    // generate fractal noise -> blend octaves of perlin noise
+    for (int i = 0; i < octaves; ++i) {
+        finalNoise += perlin(gl_FragCoord.xy * frequency, gridSize / frequency) * amplitude;
+        totalAmplitude += amplitude;
+        frequency *= 2.0;
+        amplitude *= 0.5;
+    }
+
+    finalNoise /= totalAmplitude;
+    finalColor = vec4(vec3(1), finalNoise);
 }
